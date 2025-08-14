@@ -43,7 +43,7 @@ int insertClient(int* array_fd){
 
 int removeClient(int index, int *array_fd){
 	
-	closesocket(array_fd[index]);
+	CLOSE(array_fd[index]);
 	array_fd[index] = -1;
 	
 	return 0;
@@ -55,7 +55,7 @@ void removeAll(int *array_fd){
 	
 		if(array_fd[i] != -1){
 			
-			closesocket(array_fd[i]);
+			CLOSE(array_fd[i]);
 		}		
 	}
 
@@ -88,7 +88,7 @@ void* waitConnections(void *arg){
 			std::cout << "FULL SERVER\n";
 
 			send(client_fd,buffer.c_str(),buffer.size(),MSG_NOSIGNAL);
-			closesocket(client_fd);
+			CLOSE(client_fd);
 		}
 	}
 
@@ -147,7 +147,7 @@ void *relayChat(void *arg){
 	msg_recv.clear();
 
 	removeAll(s->client_fd);
-	closesocket(s->socket_fd);
+	CLOSE(s->socket_fd);
 	std::cout << "SERVER OFFLINE\n";
 
 	return (void*)0;
@@ -156,8 +156,12 @@ void *relayChat(void *arg){
 
 int main(){
 	
+	#ifdef _WIN32
+	
 	WSADATA wsa;
 	WSAStartup(MAKEWORD(2,0),&wsa);
+
+	#endif
 	
 	Server server;
 	pthread_t connection;
@@ -170,7 +174,7 @@ int main(){
 		exit(EXIT_FAILURE);
 	}
 	
-	if(std::system("clear") != 0){
+	if(CLEAR_SCREEN() != 0){
 		
 		std::cerr << "ERROR SYSTEM\n";
 	}

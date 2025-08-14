@@ -1,6 +1,21 @@
+# Detect platform
+ifeq ($(OS),Windows_NT)
+    PLATFORM := windows
+    RM := del /Q /S
+    MKDIR_P := mkdir
+    PLATFORM_LIBS := -lws2_32
+    
+else
+    PLATFORM := unix
+    RM := rm -rf
+    MKDIR_P := mkdir -p
+    PLATFORM_LIBS :=
+    
+endif
+
 CXX = g++
 CXXFLAGS = -Wall -Wextra -O2 -g -std=c++23
-LDFLAGS = -pthread
+LDFLAGS = -pthread $(PLATFORM_LIBS)
 
 SRC_DIR = source
 HEADER_DIRS = include Config ../Config
@@ -15,29 +30,30 @@ EXECUTABLES = $(patsubst $(SRC_DIR)/%.cpp, $(BIN_DIR)/%, $(SRCS))
 
 all: $(BIN_DIR) $(OBJ_DIR) $(EXECUTABLES)
 
-
 $(BIN_DIR)/%: $(OBJ_DIR)/%.o
-	@mkdir -p $(@D)
+	@$(MKDIR_P) $(@D)
 	@$(CXX) $(CXXFLAGS) $(INCLUDES) $^ -o $@ $(LDFLAGS)
 
-
 $(OBJ_DIR)/%.o: $(SRC_DIR)/%.cpp
-	@mkdir -p $(@D)
-	@echo $<
+	@$(MKDIR_P) $(@D)
+	@echo Compiling $<
 	@$(CXX) $(CXXFLAGS) $(INCLUDES) -c $< -o $@
 
 $(BIN_DIR):
-	@mkdir -p $(BIN_DIR)
+	@$(MKDIR_P) $(BIN_DIR)
 
 $(OBJ_DIR):
-	@mkdir -p $(OBJ_DIR)
+	@$(MKDIR_P) $(OBJ_DIR)
 
 clean:
-	@rm -rf $(BIN_DIR) $(OBJ_DIR)
+	@$(RM) $(BIN_DIR) $(OBJ_DIR)
 
 TARGET ?= server
 run: all
 	@$(BIN_DIR)/$(TARGET)
+	
+platform:
+	@echo Detected platform: $(PLATFORM)
 
 .PRECIOUS: $(OBJS)
 .PHONY: all clean run

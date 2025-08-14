@@ -74,15 +74,20 @@ int inputMSG(Client *c){
 
 int main(){
 	
+	#ifdef _WIN32
+	
 	WSADATA wsa;
 	WSAStartup(MAKEWORD(2,0),&wsa);
+
+	#endif
+	
 	
 	Client c;
 
 	if(initClient(&c) == -1){
 	
 		std::cerr << "CONNECT FAILED\n";
-		closesocket(c.client_fd);
+		CLOSE(c.client_fd);
 		exit(EXIT_FAILURE);
 	}
 
@@ -92,11 +97,11 @@ int main(){
 	if(inputMSG(&c) == -1){
 		
 		std::cerr << "SERVER LOCAL OFFLINE\n";
-		closesocket(c.client_fd);
+		CLOSE(c.client_fd);
 		exit(EXIT_FAILURE);
 	}
 	
-	closesocket(c.client_fd);
+	CLOSE(c.client_fd);
 	std::cout << "\nMSG CLOSED\n";
 
 	return 0;

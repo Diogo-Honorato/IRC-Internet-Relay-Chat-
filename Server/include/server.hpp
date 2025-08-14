@@ -1,11 +1,6 @@
 #ifndef SERVER_HPP
 #define SERVER_HPP
 
-#include <sys/socket.h>
-#include <sys/types.h>
-#include <arpa/inet.h>
-#include <netinet/in.h>
-#include <unistd.h>
 #include <pthread.h>
 #include <iostream>
 #include <string>
@@ -16,6 +11,28 @@
 #define END "/end"
 #define DOMAIN AF_INET
 #define MAX_CTR_SEND (MAX_CTR + 9)
+
+#ifdef _WIN32
+
+#include <windows.h>
+#include <winsocke2.h>
+
+#define CLOSE(socket) closesocket(socket)
+#define CLEAR_SCREEN() std::system("cls")
+
+#elif defined __unix__
+
+#include <sys/socket.h>
+#include <sys/types.h>
+#include <arpa/inet.h>
+#include <netinet/in.h>
+#include <unistd.h>
+
+#define CLOSE(socket) close(socket)
+#define CLEAR_SCREEN() std::system("clear")
+
+#endif
+
 
 typedef struct{
 	

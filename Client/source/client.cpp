@@ -29,7 +29,7 @@ int initClient(Client *c){
 
 	if(status != 0){
 		
-		closesocket(c->client_fd);
+		CLOSE(c->client_fd);
 		return -1;
 	}
 
@@ -48,7 +48,7 @@ int initServerLocal(Client  *s){
 
 	if(bind(s->socket_fd,(struct sockaddr*)&s->server_local,sizeof(s->server_local)) < 0){
 		
-		closesocket(s->socket_fd);
+		CLOSE(s->socket_fd);
 		std::cerr << "ERROR::bind()::FAILURE \n";
 		return -1;
 	}
@@ -73,11 +73,11 @@ int cmds(std::vector<char> cmd, Client *cli){
 	}
 	else if(strcmp(cmd.data(),REC)==0){
 	
-		closesocket(cli->client_fd);
+		CLOSE(cli->client_fd);
 		
 		for(int i = 1; i < 6; i++){
 			
-			if(std::system("clear") != 0){
+			if(CLEAR_SCREEN() != 0){
 			
 				std::cerr << "ERROR SYSTEM\n";
 			}
@@ -86,7 +86,7 @@ int cmds(std::vector<char> cmd, Client *cli){
 			
 			if(initClient(cli) == 0){
 				
-				if(std::system("clear") != 0){
+				if(CLEAR_SCREEN() != 0){
 					std::cerr << "ERROR SYSTEM\n";
 				}
 				
@@ -163,22 +163,27 @@ void *recvMSG(void *arg){
 
 int main(){
 	
+	#ifdef _WIN32
+	
 	WSADATA wsa;
 	WSAStartup(MAKEWORD(2,0),&wsa);
+	
+	#endif
+	
 	
 	Client c;
 	pthread_t send_th;
 	pthread_t recv_th;
 	
-	if(std::system("clear") != 0){
+	if(CLEAR_SCREEN() != 0){
 		std::cerr << "ERROR SYSTEM\n";
 	}
 	
 	if(initServerLocal(&c) < 0){
 	
-		closesocket(c.client_local_fd);
-		closesocket(c.socket_fd);
-		closesocket(c.client_fd);
+		CLOSE(c.client_local_fd);
+		CLOSE(c.socket_fd);
+		CLOSE(c.client_fd);
 		
 		std::cerr << "LOCAL SERVER FAILED TO START\n";
 		exit(EXIT_FAILURE);
@@ -188,9 +193,9 @@ int main(){
 
 	if(initClient(&c) < 0){
 	
-		closesocket(c.client_local_fd);
-		closesocket(c.socket_fd);
-		closesocket(c.client_fd);
+		CLOSE(c.client_local_fd);
+		CLOSE(c.socket_fd);
+		CLOSE(c.client_fd);
 		
 		std::cout << "FALEID TO CONNECT HOST SERVER\n";
 		exit(EXIT_FAILURE);
@@ -207,9 +212,9 @@ int main(){
 	pthread_join(send_th,NULL);
 	pthread_join(recv_th,NULL);
 
-	closesocket(c.client_local_fd);
-	closesocket(c.socket_fd);
-	closesocket(c.client_fd);
+	CLOSE(c.client_local_fd);
+	CLOSE(c.socket_fd);
+	CLOSE(c.client_fd);
 
 	std::cout << "RELAY CHAT CLOSED\n";
 
