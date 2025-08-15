@@ -15,7 +15,7 @@
 #ifdef _WIN32
 
 #include <windows.h>
-#include <winsocke2.h>
+#include <winsock.h>
 
 #define CLOSE(socket) closesocket(socket)
 #define CLEAR_SCREEN() std::system("cls")
