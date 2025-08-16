@@ -26,6 +26,7 @@
 #define DETACH(x) pthread_detach(x);
 #define JOIN(x) pthread_join(x,NULL)
 
+
 #elif defined(_WIN32) || defined(WIN32)
 
 #define WIN_OS

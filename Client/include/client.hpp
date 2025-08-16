@@ -12,6 +12,7 @@
 
 
 
+
 #ifdef __linux__
 
 #include <pthread.h>
@@ -25,7 +26,9 @@
 #define CLEAR_SCREEN() std::system("clear")
 #define JOIN(x) pthread_join(x,NULL)
 
+
 #elif defined(_WIN32) || defined(WIN32)
+
 
 #define WIN_OS
 
