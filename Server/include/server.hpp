@@ -1,7 +1,6 @@
 #ifndef SERVER_HPP
 #define SERVER_HPP
 
-#include <pthread.h>
 #include <iostream>
 #include <string>
 #include <vector>
@@ -12,16 +11,10 @@
 #define DOMAIN AF_INET
 #define MAX_CTR_SEND (MAX_CTR + 9)
 
-#ifdef _WIN32
 
-#include <windows.h>
-#include <winsocke2.h>
+#ifdef __linux__
 
-#define CLOSE(socket) closesocket(socket)
-#define CLEAR_SCREEN() std::system("cls")
-
-#elif defined __unix__
-
+#include <pthread.h>
 #include <sys/socket.h>
 #include <sys/types.h>
 #include <arpa/inet.h>
@@ -30,6 +23,21 @@
 
 #define CLOSE(socket) close(socket)
 #define CLEAR_SCREEN() std::system("clear")
+#define DETACH(x) pthread_detach(x);
+#define JOIN(x) pthread_join(x,NULL)
+
+#elif defined(_WIN32) || defined(WIN32)
+
+#define WIN_OS
+
+#include <windows.h>
+#include <winsock2.h>
+#include <threads>
+
+#define CLOSE(socket) closesocket(socket)
+#define CLEAR_SCREEN() std::system("cls")
+#define DETACH(x) x.detach()
+#define JOIN(x) x.join()
 
 #endif
 

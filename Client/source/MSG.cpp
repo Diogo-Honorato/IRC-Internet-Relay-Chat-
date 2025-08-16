@@ -26,7 +26,7 @@ int initClient(Client *c){
 
 int inputMSG(Client *c){
 	
-	std::cout << "Send Message\n";
+	std::cout << "SEND MESSAGE:\n\n";
 	std::vector<char> buffer(MAX_CTR);
 	std::string msg;
 	
@@ -74,7 +74,7 @@ int inputMSG(Client *c){
 
 int main(){
 	
-	#ifdef _WIN32
+	#ifdef WIN_OS
 	
 	WSADATA wsa;
 	WSAStartup(MAKEWORD(2,0),&wsa);

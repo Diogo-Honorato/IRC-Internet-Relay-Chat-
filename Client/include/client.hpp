@@ -1,7 +1,7 @@
 #ifndef CLIENT_HPP
 #define CLIENT_HPP
 
-#include <pthread.h>
+
 #include <iostream>
 #include <cstring>
 #include <vector>
@@ -12,16 +12,9 @@
 
 
 
-#ifdef _WIN32
+#ifdef __linux__
 
-#include <windows.h>
-#include <winsocke2.h>
-
-#define CLOSE(socket) closesocket(socket)
-#define CLEAR_SCREEN() std::system("cls")
-
-#elif defined __unix__
-
+#include <pthread.h>
 #include <sys/socket.h>
 #include <sys/types.h>
 #include <arpa/inet.h>
@@ -30,6 +23,19 @@
 
 #define CLOSE(socket) close(socket)
 #define CLEAR_SCREEN() std::system("clear")
+#define JOIN(x) pthread_join(x,NULL)
+
+#elif defined(_WIN32) || defined(WIN32)
+
+#define WIN_OS
+
+#include <windows.h>
+#include <winsock2.h>
+#include <threads>
+
+#define CLOSE(socket) closesocket(socket)
+#define CLEAR_SCREEN() std::system("cls")
+#define JOIN(x) x.join()
 
 #endif
 

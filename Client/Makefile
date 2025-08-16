@@ -1,21 +1,28 @@
 # Detect platform
+
+UNAME_S := $(shell uname -s)
+
 ifeq ($(OS),Windows_NT)
     PLATFORM := windows
     RM := del /Q /S
     MKDIR_P := mkdir
     PLATFORM_LIBS := -lws2_32
     
-else
-    PLATFORM := unix
+else ifeq ($(UNAME_S),Linux)
+    PLATFORM := linux
     RM := rm -rf
     MKDIR_P := mkdir -p
-    PLATFORM_LIBS :=
+    PLATFORM_LIBS := -lpthread 
+
+else
+    $(error Unsupported platform: $(UNAME_S))
+    
     
 endif
 
 CXX = g++
 CXXFLAGS = -Wall -Wextra -O2 -g -std=c++23
-LDFLAGS = -pthread $(PLATFORM_LIBS)
+LDFLAGS = $(PLATFORM_LIBS)
 
 SRC_DIR = source
 HEADER_DIRS = include Config ../Config

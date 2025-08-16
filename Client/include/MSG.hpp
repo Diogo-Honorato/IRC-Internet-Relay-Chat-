@@ -7,15 +7,7 @@
 #include "../../Config/config.hpp"
 #include "../Config/configClient.hpp"
 
-#ifdef _WIN32
-
-#include <windows.h>
-#include <winsocke2.h>
-
-#define CLOSE(socket) closesocket(socket)
-#define CLEAR_SCREEN() std::system("cls")
-
-#elif defined __unix__
+#ifdef __linux__
 
 #include <sys/socket.h>
 #include <sys/types.h>
@@ -25,6 +17,16 @@
 
 #define CLOSE(socket) close(socket)
 #define CLEAR_SCREEN() std::system("clear")
+
+#elif defined(_WIN32) || defined(WIN32)
+
+#define WIN_OS 
+
+#include <windows.h>
+#include <winsock2.h>
+
+#define CLOSE(socket) closesocket(socket)
+#define CLEAR_SCREEN() std::system("cls")
 
 #endif
 

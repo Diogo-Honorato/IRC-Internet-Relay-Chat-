@@ -163,7 +163,7 @@ void *recvMSG(void *arg){
 
 int main(){
 	
-	#ifdef _WIN32
+	#ifdef WIN_OS
 	
 	WSADATA wsa;
 	WSAStartup(MAKEWORD(2,0),&wsa);
@@ -172,9 +172,7 @@ int main(){
 	
 	
 	Client c;
-	pthread_t send_th;
-	pthread_t recv_th;
-	
+
 	if(CLEAR_SCREEN() != 0){
 		std::cerr << "ERROR SYSTEM\n";
 	}
@@ -205,12 +203,25 @@ int main(){
 	c.run =1;
 	
 	std::cout << "CONNECTED TO HOST SERVER\n\nMESSAGE SCREEN:\n-----------------------------------------------------------------\n";
-
+	
+	#ifdef WIN_OS
+	
+	std::thread send_th(sendMSG,&c);
+	std::thread recv_th(recvMSG,&c);
+	
+	#else
+	
+	pthread_t send_th;
+	pthread_t recv_th;
+	
 	pthread_create(&send_th,NULL,sendMSG,&c);
 	pthread_create(&recv_th,NULL,recvMSG,&c);
+	
+	#endif
+	
 
-	pthread_join(send_th,NULL);
-	pthread_join(recv_th,NULL);
+	JOIN(send_th);
+	JOIN(recv_th);
 
 	CLOSE(c.client_local_fd);
 	CLOSE(c.socket_fd);

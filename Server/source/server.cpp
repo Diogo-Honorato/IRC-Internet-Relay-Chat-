@@ -156,16 +156,14 @@ void *relayChat(void *arg){
 
 int main(){
 	
-	#ifdef _WIN32
+	#ifdef WIN_OS
 	
 	WSADATA wsa;
 	WSAStartup(MAKEWORD(2,0),&wsa);
-
+	
 	#endif
 	
 	Server server;
-	pthread_t connection;
-	pthread_t relay;
 	std::string cmd;
 
 	if(initServer(&server) < 0){
@@ -180,9 +178,22 @@ int main(){
 	}
 	
 	std::cout << "SERVER STARTED\n";
-
+	
+	#ifdef WIN_OS
+	
+	std::thread connection(waitConnections,&server);
+	std::thread relay(relayChat,&server);
+	
+	#else
+	
+	pthread_t connection;
+	pthread_t relay;
+	
 	pthread_create(&connection,NULL,waitConnections,&server);
 	pthread_create(&relay,NULL,relayChat,&server);
+	
+	#endif
+	
 	
 	while(server.run){
 
@@ -190,14 +201,14 @@ int main(){
 
 		if(cmd == END){
 			server.run = 0;
-			pthread_detach(connection);
+			DETACH(connection);
 			std::cout << "THE SERVER IS NOT ACCEPTING ANY MORE CONNECTIONS\n";
 		}
 		
 		cmd.clear();
 	}
 	
-	pthread_join(relay,NULL);
+	JOIN(relay);
 
 	return 0;
 }
