@@ -2,7 +2,7 @@
 
 int initMSG(){
 
-	std::string cmd = "gnome-terminal -- $SHELL -c 'bin/./MSG'";
+	std::string cmd = START_TERMINAL;
 
 	if(std::system(cmd.c_str()) == 0){
 	
@@ -33,6 +33,17 @@ int initClient(Client *c){
 		return -1;
 	}
 
+	#ifdef WIN_OS
+
+		u_long mode = 1;
+    	if (ioctlsocket(c->client_fd, FIONBIO, &mode) != 0) {
+        	std::cerr << "ERROR IOCTL\n" << std::endl;
+        	CLOSE(c->client_fd);
+			return -1;
+    	}
+
+	#endif
+
 	return 0;
 }
 
@@ -61,6 +72,17 @@ int initServerLocal(Client  *s){
 	}
 	
 	s->client_local_fd = accept(s->socket_fd,(struct sockaddr*)&s->client_local,&size);
+	
+	#ifdef WIN_OS
+
+		u_long mode = 1;
+    	if (ioctlsocket(s->client_local_fd, FIONBIO, &mode) != 0) {
+        	std::cerr << "ERROR IOCTL\n" << std::endl;
+        	CLOSE(s->client_local_fd);
+			return -1;
+    	}
+
+	#endif
 	
 	return 0;
 }
@@ -94,7 +116,8 @@ int cmds(std::vector<char> cmd, Client *cli){
 				return 0;
 			}
 			
-			sleep(1);
+			//in seconds
+			SLEEP(1);
 		}
 		
 		std::cout << "SERVER OFFLINE TRY: " << REC << "\n";
@@ -109,12 +132,12 @@ int cmds(std::vector<char> cmd, Client *cli){
 void *sendMSG(void* arg){
 	
 	Client* cli = (Client*)arg;
-	ssize_t msg_len;
+	ssize_t msg_len = 0;
 	std::vector<char> buffer(MAX_CTR);
 		
 	while(cli->run){
 	
-		msg_len = recv(cli->client_local_fd,buffer.data(),MAX_CTR,MSG_DONTWAIT);
+		msg_len = recv(cli->client_local_fd,buffer.data(),MAX_CTR,FLAG_DONTWAIT);
 		
 		if(msg_len > 0){
 	
@@ -124,7 +147,7 @@ void *sendMSG(void* arg){
 			}
 			else{
 			
-				if(send(cli->client_fd,buffer.data(),msg_len,MSG_NOSIGNAL) == -1){
+				if(send(cli->client_fd,buffer.data(),msg_len,FLAG_NOSIGNAL) == -1){
 						
 					std::cout << "SERVER OFFLINE TRY: " << REC << "\n";
 				}
@@ -146,7 +169,7 @@ void *recvMSG(void *arg){
 	
 	while(cli->run){
 		
-		msg_size = recv(cli->client_fd,buffer.data(),MAX_CTR,MSG_DONTWAIT);
+		msg_size = recv(cli->client_fd,buffer.data(),MAX_CTR,FLAG_DONTWAIT);
 
 		if(msg_size > 0){
 			for(int i =0; i < msg_size; i++){
@@ -165,8 +188,8 @@ int main(){
 	
 	#ifdef WIN_OS
 	
-	WSADATA wsa;
-	WSAStartup(MAKEWORD(2,0),&wsa);
+		WSADATA wsa;
+		WSAStartup(MAKEWORD(2,0),&wsa);
 	
 	#endif
 	
@@ -184,6 +207,11 @@ int main(){
 		CLOSE(c.client_fd);
 		
 		std::cerr << "LOCAL SERVER FAILED TO START\n";
+
+		#ifdef WIN_OS
+			WSACleanup();
+		#endif
+
 		exit(EXIT_FAILURE);
 	}
 	
@@ -196,6 +224,11 @@ int main(){
 		CLOSE(c.client_fd);
 		
 		std::cout << "FALEID TO CONNECT HOST SERVER\n";
+
+		#ifdef WIN_OS
+			WSACleanup();
+		#endif
+
 		exit(EXIT_FAILURE);
 	}
 	
@@ -227,6 +260,10 @@ int main(){
 	CLOSE(c.socket_fd);
 	CLOSE(c.client_fd);
 
+	#ifdef WIN_OS
+		WSACleanup();
+	#endif
+	
 	std::cout << "RELAY CHAT CLOSED\n";
 
 	return 0;

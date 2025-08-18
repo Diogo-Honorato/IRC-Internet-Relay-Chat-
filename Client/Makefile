@@ -1,23 +1,23 @@
 # Detect platform
-
-UNAME_S := $(shell uname -s)
-
 ifeq ($(OS),Windows_NT)
     PLATFORM := windows
-    RM := del /Q /S
-    MKDIR_P := mkdir
+    RM := rmdir /S /Q
+    define MKDIR_P
+        if not exist "$(1)" mkdir "$(1)"
+    endef
     PLATFORM_LIBS := -lws2_32
-    
-else ifeq ($(UNAME_S),Linux)
-    PLATFORM := linux
-    RM := rm -rf
-    MKDIR_P := mkdir -p
-    PLATFORM_LIBS := -lpthread 
-
 else
-    $(error Unsupported platform: $(UNAME_S))
-    
-    
+    UNAME_S := $(shell uname -s)
+    ifeq ($(UNAME_S),Linux)
+        PLATFORM := linux
+        RM := rm -rf
+        define MKDIR_P
+            mkdir -p $(1)
+        endef
+        PLATFORM_LIBS := -lpthread
+    else
+        $(error Unsupported platform: $(UNAME_S))
+    endif
 endif
 
 CXX = g++
@@ -31,29 +31,30 @@ OBJ_DIR = objects
 
 INCLUDES = $(foreach dir, $(HEADER_DIRS), -I$(dir))
 
-SRCS = $(shell find $(SRC_DIR) -type f -name '*.cpp')
-OBJS = $(patsubst $(SRC_DIR)/%.cpp, $(OBJ_DIR)/%.o, $(SRCS))
-EXECUTABLES = $(patsubst $(SRC_DIR)/%.cpp, $(BIN_DIR)/%, $(SRCS))
+SRCS := $(wildcard $(SRC_DIR)/**/*.cpp) $(wildcard $(SRC_DIR)/*.cpp)
+OBJS := $(patsubst $(SRC_DIR)/%.cpp, $(OBJ_DIR)/%.o, $(SRCS))
+EXECUTABLES := $(patsubst $(SRC_DIR)/%.cpp, $(BIN_DIR)/%, $(SRCS))
 
 all: $(BIN_DIR) $(OBJ_DIR) $(EXECUTABLES)
 
 $(BIN_DIR)/%: $(OBJ_DIR)/%.o
-	@$(MKDIR_P) $(@D)
+	@$(call MKDIR_P,$(@D))
 	@$(CXX) $(CXXFLAGS) $(INCLUDES) $^ -o $@ $(LDFLAGS)
 
 $(OBJ_DIR)/%.o: $(SRC_DIR)/%.cpp
-	@$(MKDIR_P) $(@D)
-	@echo Compiling $<
+	@echo "$<"
+	@$(call MKDIR_P,$(@D))
 	@$(CXX) $(CXXFLAGS) $(INCLUDES) -c $< -o $@
 
 $(BIN_DIR):
-	@$(MKDIR_P) $(BIN_DIR)
+	@$(call MKDIR_P,$(BIN_DIR))
 
 $(OBJ_DIR):
-	@$(MKDIR_P) $(OBJ_DIR)
+	@$(call MKDIR_P,$(OBJ_DIR))
 
 clean:
-	@$(RM) $(BIN_DIR) $(OBJ_DIR)
+	@-$(RM) $(BIN_DIR)
+	@-$(RM) $(OBJ_DIR)
 
 TARGET ?= client
 run: all
@@ -64,4 +65,3 @@ platform:
 
 .PRECIOUS: $(OBJS)
 .PHONY: all clean run
-

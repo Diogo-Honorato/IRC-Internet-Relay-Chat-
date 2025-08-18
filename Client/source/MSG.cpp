@@ -49,13 +49,14 @@ int inputMSG(Client *c){
 
 			if(msg == END){
 
-				send(c->client_fd,buffer.data(),buffer.size(),MSG_NOSIGNAL);
+				send(c->client_fd,buffer.data(),buffer.size(),FLAG_NOSIGNAL);
 				std::cout << "CLOSING...\n";
-				sleep(1);
+				//in seconds
+				SLEEP(1);
 				break;
 			}
 		
-			if(send(c->client_fd,buffer.data(),buffer.size(),MSG_NOSIGNAL) == -1){
+			if(send(c->client_fd,buffer.data(),buffer.size(),FLAG_NOSIGNAL) == -1){
 					
 				return -1;
 			}	
@@ -76,8 +77,8 @@ int main(){
 	
 	#ifdef WIN_OS
 	
-	WSADATA wsa;
-	WSAStartup(MAKEWORD(2,0),&wsa);
+		WSADATA wsa;
+		WSAStartup(MAKEWORD(2,0),&wsa);
 
 	#endif
 	
@@ -88,6 +89,11 @@ int main(){
 	
 		std::cerr << "CONNECT FAILED\n";
 		CLOSE(c.client_fd);
+
+		#ifdef WIN_OS
+			WSACleanup();
+		#endif
+
 		exit(EXIT_FAILURE);
 	}
 
@@ -98,10 +104,20 @@ int main(){
 		
 		std::cerr << "SERVER LOCAL OFFLINE\n";
 		CLOSE(c.client_fd);
+
+		#ifdef WIN_OS
+			WSACleanup();
+		#endif
+
 		exit(EXIT_FAILURE);
 	}
 	
 	CLOSE(c.client_fd);
+
+	#ifdef WIN_OS
+		WSACleanup();
+	#endif
+	
 	std::cout << "\nMSG CLOSED\n";
 
 	return 0;

@@ -25,20 +25,31 @@
 #define CLOSE(socket) close(socket)
 #define CLEAR_SCREEN() std::system("clear")
 #define JOIN(x) pthread_join(x,NULL)
-
+#define FLAG_NOSIGNAL MSG_NOSIGNAL
+#define	FLAG_DONTWAIT MSG_DONTWAIT
+#define START_TERMINAL "gnome-terminal -- $SHELL -c 'bin/./MSG'"
+#define SLEEP(time) sleep(time)
 
 #elif defined(_WIN32) || defined(WIN32)
 
 
 #define WIN_OS
 
-#include <windows.h>
 #include <winsock2.h>
-#include <threads>
+#include <ws2tcpip.h>
+#include <windows.h>
+#include <thread>
 
 #define CLOSE(socket) closesocket(socket)
 #define CLEAR_SCREEN() std::system("cls")
 #define JOIN(x) x.join()
+#define FLAG_NOSIGNAL 0
+#define	FLAG_DONTWAIT 0
+#define START_TERMINAL "start powershell -NoExit -Command bin\\MSG.exe"
+#define SLEEP(time) Sleep(time*1000)
+
+typedef int socklen_t;
+typedef SSIZE_T ssize_t;
 
 #endif
 

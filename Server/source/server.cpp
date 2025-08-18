@@ -4,14 +4,13 @@
 int initServer(Server  *s){
 	
 	s->socket_fd = socket(DOMAIN,SOCK_STREAM,0);
-
 	s->server.sin_port = htons(PORT_SERVER_HOST);
 	s->server.sin_family = DOMAIN;
 	s->server.sin_addr.s_addr = inet_addr(IP_SERVER_HOST);
 
 	if(bind(s->socket_fd,(struct sockaddr*)&s->server,sizeof(s->server)) < 0){
 
-		std::cerr << "ERROR::bind()::FAILURE \n";
+		std::cerr << "ERROR::bind()::";
 		return -1;
 	}
 	
@@ -73,21 +72,32 @@ void* waitConnections(void *arg){
 	while(s->run){
 	
 		client_fd = accept(s->socket_fd,(struct sockaddr*)&s->client,&size);
-
+	
 		index = insertClient(s->client_fd);
 
 		if(index != -1){
 			
+			#ifdef WIN_OS
+
+				u_long mode = 1;
+    			if (ioctlsocket(client_fd, FIONBIO, &mode) != 0) {
+        			std::cerr << "ERROR IOCTL::WAIT_CONNECTION\n" << std::endl;
+        			CLOSE(client_fd);
+					continue;
+    			}
+
+			#endif
+
 			s->client_fd[index] = client_fd;
 			s->online+=1;			
 			std::cout << "NEW USER CONNECTED: " << client_fd << "\n" << s->online << " \033[32mONLINE\033[0m\n";
- 
+			
 		}
 		else{
 			
 			std::cout << "FULL SERVER\n";
 
-			send(client_fd,buffer.c_str(),buffer.size(),MSG_NOSIGNAL);
+			send(client_fd,buffer.c_str(),buffer.size(),FLAG_NOSIGNAL);
 			CLOSE(client_fd);
 		}
 	}
@@ -109,7 +119,7 @@ void *relayChat(void *arg){
 		
 			if(s->client_fd[i] != -1){
 				
-				msg_len = recv(s->client_fd[i],msg_recv.data(),MAX_CTR,MSG_DONTWAIT);
+				msg_len = recv(s->client_fd[i],msg_recv.data(),MAX_CTR,FLAG_DONTWAIT);
 				
 				if(msg_len > -1){
 				
@@ -119,7 +129,7 @@ void *relayChat(void *arg){
 					
 						if(s->client_fd[i] != -1){
 							
-							if(send(s->client_fd[i],msg_send.data(),msg_len + 9,MSG_NOSIGNAL) == -1){
+							if(send(s->client_fd[i],msg_send.data(),msg_len + 9,FLAG_NOSIGNAL) == -1){
 								
 								temp = s->client_fd[i];
 								
@@ -158,8 +168,8 @@ int main(){
 	
 	#ifdef WIN_OS
 	
-	WSADATA wsa;
-	WSAStartup(MAKEWORD(2,0),&wsa);
+		WSADATA wsa;
+		WSAStartup(MAKEWORD(2,0),&wsa);
 	
 	#endif
 	
@@ -169,6 +179,10 @@ int main(){
 	if(initServer(&server) < 0){
 	
 		std::cerr << "ERROR INIT SERVER\n";
+		#ifdef WIN_OS
+			WSACleanup();
+		#endif
+		
 		exit(EXIT_FAILURE);
 	}
 	
@@ -181,16 +195,16 @@ int main(){
 	
 	#ifdef WIN_OS
 	
-	std::thread connection(waitConnections,&server);
-	std::thread relay(relayChat,&server);
+		std::thread connection(waitConnections,&server);
+		std::thread relay(relayChat,&server);
 	
 	#else
 	
-	pthread_t connection;
-	pthread_t relay;
+		pthread_t connection;
+		pthread_t relay;
 	
-	pthread_create(&connection,NULL,waitConnections,&server);
-	pthread_create(&relay,NULL,relayChat,&server);
+		pthread_create(&connection,NULL,waitConnections,&server);
+		pthread_create(&relay,NULL,relayChat,&server);
 	
 	#endif
 	
@@ -210,5 +224,9 @@ int main(){
 	
 	JOIN(relay);
 
+	#ifdef WIN_OS
+		WSACleanup();
+	#endif
+	
 	return 0;
 }

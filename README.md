@@ -6,6 +6,23 @@ A aplicação é composta por três módulos principais: Servidor, Cliente e o M
 
 O código foi desenvolvido em C++ utilizando a biblioteca padrão POSIX para manipulação de sockets e threads. A reconexão automática também foi implementada para garantir que, em caso de queda do servidor, o cliente tenha a opção de tentar se reconectar.
 
+# Dependências do Projeto
+
+Este projeto é multiplataforma e pode ser compilado tanto em **Linux** quanto em **Windows**.  
+A seguir estão listadas todas as ferramentas.
+
+## Ferramentas
+- Compilador C++ com suporte a C++23 (ex.: `g++`, `clang++`)
+- Make
+
+## Observações
+
+Todas as bibliotecas e headers mencionados são nativos do sistema operacional.
+Se algum deles não estiver presente:
+
+No Linux, utilize o gerenciador de pacotes da sua distribuição para instalar os pacotes de desenvolvimento correspondentes.
+
+No Windows, verifique se o MinGW, Visual Studio Build Tools ou MSYS2 está corretamente instalado, pois já inclui todas as bibliotecas necessárias, caso precise atualize-os ou instale os respectivos programas.
 
 ## Como compilar e executar
 
