@@ -239,16 +239,16 @@ int main(){
 	
 	#ifdef WIN_OS
 	
-	std::thread send_th(sendMSG,&c);
-	std::thread recv_th(recvMSG,&c);
+		std::thread send_th(sendMSG,&c);
+		std::thread recv_th(recvMSG,&c);
 	
 	#else
 	
-	pthread_t send_th;
-	pthread_t recv_th;
-	
-	pthread_create(&send_th,NULL,sendMSG,&c);
-	pthread_create(&recv_th,NULL,recvMSG,&c);
+		pthread_t send_th;
+		pthread_t recv_th;
+
+		pthread_create(&send_th,NULL,sendMSG,&c);
+		pthread_create(&recv_th,NULL,recvMSG,&c);
 	
 	#endif
 	
