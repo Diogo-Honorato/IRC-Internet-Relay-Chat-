@@ -121,8 +121,8 @@ void *relayChat(void *arg){
 				
 				msg_len = recv(s->client_fd[i],msg_recv.data(),MAX_CTR,FLAG_DONTWAIT);
 				
-				if(msg_len > -1){
-				
+				if(msg_len > 0){
+
 					snprintf(msg_send.data(),msg_len + 9,"USER %d: %s\n",s->client_fd[i],msg_recv.data());
 
 					for(int i  = 0; i < MAX_USERS; i++){

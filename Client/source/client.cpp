@@ -138,7 +138,7 @@ void *sendMSG(void* arg){
 	while(cli->run){
 	
 		msg_len = recv(cli->client_local_fd,buffer.data(),MAX_CTR,FLAG_DONTWAIT);
-		
+
 		if(msg_len > 0){
 	
 			if(buffer[0] == '/'){
@@ -146,7 +146,7 @@ void *sendMSG(void* arg){
 				cmds(buffer,cli);
 			}
 			else{
-			
+
 				if(send(cli->client_fd,buffer.data(),msg_len,FLAG_NOSIGNAL) == -1){
 						
 					std::cout << "SERVER OFFLINE TRY: " << REC << "\n";
@@ -165,18 +165,18 @@ void *recvMSG(void *arg){
 	
 	ssize_t msg_size;
 	Client* cli = (Client*)arg;
-	std::vector<char> buffer(MAX_CTR);
+	std::vector<char> buffer(MAX_CTR_SEND);
 	
 	while(cli->run){
 		
-		msg_size = recv(cli->client_fd,buffer.data(),MAX_CTR,FLAG_DONTWAIT);
+		msg_size = recv(cli->client_fd,buffer.data(),buffer.size(),FLAG_DONTWAIT);
 
 		if(msg_size > 0){
 			for(int i =0; i < msg_size; i++){
 				std::cout << buffer[i];
 			}
 			buffer.clear();
-			buffer.resize(MAX_CTR);
+			buffer.resize(MAX_CTR_SEND);
 		}
 	}
 

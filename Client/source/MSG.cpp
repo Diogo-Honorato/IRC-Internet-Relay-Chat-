@@ -37,9 +37,9 @@ int inputMSG(Client *c){
 		std::getline(std::cin,msg);
 		
 		if(msg.size() > 0){
-		
+
 			if(msg.size() >= MAX_CTR){
-			
+
 				msg.resize(MAX_CTR);
 				msg[MAX_CTR-1] = '\0';
 			}
@@ -64,8 +64,6 @@ int inputMSG(Client *c){
 		
 		buffer.clear();
 		buffer.resize(MAX_CTR);
-		msg.clear();
-		msg.resize(MAX_CTR);
 	}	
 
 	return 0;

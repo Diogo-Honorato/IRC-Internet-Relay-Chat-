@@ -9,7 +9,6 @@
 
 #define END "/end"
 #define DOMAIN AF_INET
-#define MAX_CTR_SEND (MAX_CTR + 9)
 
 
 #ifdef __linux__
