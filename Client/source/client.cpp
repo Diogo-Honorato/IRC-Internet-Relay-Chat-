@@ -133,11 +133,11 @@ void *sendMSG(void* arg){
 	
 	Client* cli = (Client*)arg;
 	ssize_t msg_len = 0;
-	std::vector<char> buffer(MAX_CTR);
+	std::vector<char> buffer(BUFFER);
 		
 	while(cli->run){
 	
-		msg_len = recv(cli->client_local_fd,buffer.data(),MAX_CTR,FLAG_DONTWAIT);
+		msg_len = recv(cli->client_local_fd,buffer.data(),BUFFER,FLAG_DONTWAIT);
 
 		if(msg_len > 0){
 	
@@ -154,7 +154,7 @@ void *sendMSG(void* arg){
 			}
 
 			buffer.clear();
-			buffer.resize(MAX_CTR);
+			buffer.resize(BUFFER);
 		}
 	}
 

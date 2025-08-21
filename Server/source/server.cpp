@@ -89,7 +89,7 @@ void* waitConnections(void *arg){
 			#endif
 
 			s->client_fd[index] = client_fd;
-			s->online+=1;			
+			s->online= s->online + 1;			
 			std::cout << "NEW USER CONNECTED: " << client_fd << "\n" << s->online << " \033[32mONLINE\033[0m\n";
 			
 		}
@@ -108,7 +108,7 @@ void* waitConnections(void *arg){
 void *relayChat(void *arg){
 	
 	std::vector<char> msg_send(MAX_CTR_SEND);
-	std::vector<char> msg_recv(MAX_CTR);
+	std::vector<char> msg_recv(BUFFER);
 	ssize_t msg_len;
 	int temp;
 	Server *s = (Server*)arg;
@@ -119,7 +119,7 @@ void *relayChat(void *arg){
 		
 			if(s->client_fd[i] != -1){
 				
-				msg_len = recv(s->client_fd[i],msg_recv.data(),MAX_CTR,FLAG_DONTWAIT);
+				msg_len = recv(s->client_fd[i],msg_recv.data(),BUFFER,FLAG_DONTWAIT);
 				
 				if(msg_len > 0){
 
@@ -135,7 +135,7 @@ void *relayChat(void *arg){
 								
 								removeClient(i,s->client_fd);
 								
-								s->online-=1;
+								s->online= s->online - 1;
 								
 								std::cout << "USER: " << temp << " OFFLINE\n" << s->online << " \033[32mONLINE\033[0m\n";
 								
@@ -147,7 +147,7 @@ void *relayChat(void *arg){
 					msg_send.clear();
 					msg_recv.clear();
 					msg_send.resize(MAX_CTR_SEND);
-					msg_recv.resize(MAX_CTR);
+					msg_recv.resize(BUFFER);
 				}
 			}
 		}

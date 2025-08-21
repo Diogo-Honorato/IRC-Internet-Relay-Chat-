@@ -47,7 +47,7 @@ No cliente, duas threads são iniciadas: uma para escutar o servidor e outra par
 Os parâmetros principais do sistema, como IP, portas, quantidade máxima de usuários e tamanho das mensagens, podem ser configurados no arquivo config.hpp, localizado no diretório Config. Abaixo está um exemplo das diretivas definidas nesse cabeçalho:
 
 ```
-#define MAX_CTR 51                     // Tamanho máximo das mensagens
+#define MAX_CTR 50                     // Tamanho máximo das mensagens
 #define IP_SERVER_HOST "127.0.0.1"     // Endereço IP do servidor
 #define PORT_SERVER_HOST 2569          // Porta do servidor
 #define MAX_USERS 8                    // Número máximo de conexões simultâneas

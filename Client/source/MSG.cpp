@@ -27,7 +27,7 @@ int initClient(Client *c){
 int inputMSG(Client *c){
 	
 	std::cout << "SEND MESSAGE:\n\n";
-	std::vector<char> buffer(MAX_CTR);
+	std::vector<char> buffer(BUFFER);
 	std::string msg;
 	
 	while(c->run){
@@ -38,10 +38,11 @@ int inputMSG(Client *c){
 		
 		if(msg.size() > 0){
 
-			if(msg.size() >= MAX_CTR){
+			if(msg.size() > MAX_CTR){
 
-				msg.resize(MAX_CTR);
-				msg[MAX_CTR-1] = '\0';
+				std::cout << "\n(CHARACTER LIMIT REACHED)\n\n";
+				msg.clear();
+				continue;
 			}
 			
 
@@ -63,7 +64,8 @@ int inputMSG(Client *c){
 		}
 		
 		buffer.clear();
-		buffer.resize(MAX_CTR);
+		buffer.resize(BUFFER);
+		msg.clear();
 	}	
 
 	return 0;
