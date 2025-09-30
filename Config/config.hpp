@@ -16,9 +16,6 @@
 
 #define MAX_CTR_SEND (BUFFER + 9)
 
-#define IP_SERVER_HOST "127.0.0.1"
-#define PORT_SERVER_HOST 2569
-
 #define MAX_USERS 8
 
 

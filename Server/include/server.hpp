@@ -57,6 +57,8 @@ typedef struct{
 	int socket_fd;
 	int online;
 	bool run;
+	const char* IP_SERVER_HOST;
+	int PORT_SERVER_HOST;
 
 }Server;
 

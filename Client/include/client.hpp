@@ -65,6 +65,8 @@ typedef struct{
 	int socket_fd;
 	int client_fd;
 	int run;
+	const char* IP_SERVER_HOST;
+	int PORT_SERVER_HOST;
 }Client;
 
 

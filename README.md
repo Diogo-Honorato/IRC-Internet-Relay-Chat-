@@ -30,7 +30,9 @@ Este projeto utiliza um Makefile. Para compilar cada programa do projeto, basta 
 
 -`make` para compilar.
 
--`make run` para executar.
+-`make run` para executar em localhost.
+
+-`make run ARGS="IPv4 PORT"` para executar com um IP e PORT da sua preferência.
 
 -`make clean` para limpar objects e bin.
 

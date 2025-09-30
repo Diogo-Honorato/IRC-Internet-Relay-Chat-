@@ -4,9 +4,9 @@
 int initServer(Server  *s){
 	
 	s->socket_fd = socket(DOMAIN,SOCK_STREAM,0);
-	s->server.sin_port = htons(PORT_SERVER_HOST);
+	s->server.sin_port = htons(s->PORT_SERVER_HOST);
 	s->server.sin_family = DOMAIN;
-	s->server.sin_addr.s_addr = inet_addr(IP_SERVER_HOST);
+	s->server.sin_addr.s_addr = inet_addr(s->IP_SERVER_HOST);
 
 	if(bind(s->socket_fd,(struct sockaddr*)&s->server,sizeof(s->server)) < 0){
 
@@ -164,7 +164,7 @@ void *relayChat(void *arg){
 }
 
 
-int main(){
+int main(int argc , char *argv[]){
 	
 	#ifdef WIN_OS
 	
@@ -175,6 +175,22 @@ int main(){
 	
 	Server server;
 	std::string cmd;
+
+	if(argc == 3){
+		server.IP_SERVER_HOST = argv[1];
+		server.PORT_SERVER_HOST = std::stoi(argv[2]);
+	}
+	else if(argc == 1){
+
+		server.IP_SERVER_HOST = "127.0.0.1";
+		server.PORT_SERVER_HOST = 2569;
+	}
+	else{
+		std::cerr << "ERROR AND EXPECTED 2 ARGS\n";
+		exit(EXIT_FAILURE);
+	}
+
+
 
 	if(initServer(&server) < 0){
 	

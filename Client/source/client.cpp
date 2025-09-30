@@ -22,8 +22,8 @@ int initClient(Client *c){
 	c->client_fd = socket(DOMAIN,SOCK_STREAM,0);
 
 	c->server_target.sin_family = DOMAIN;
-	c->server_target.sin_port = htons(PORT_SERVER_HOST);
-	c->server_target.sin_addr.s_addr = inet_addr(IP_SERVER_HOST);
+	c->server_target.sin_port = htons(c->PORT_SERVER_HOST);
+	c->server_target.sin_addr.s_addr = inet_addr(c->IP_SERVER_HOST);
 
 	int status = connect(c->client_fd,(struct sockaddr*)&c->server_target,size);
 
@@ -184,7 +184,7 @@ void *recvMSG(void *arg){
 }
 
 
-int main(){
+int main(int argc, char *argv[]){
 	
 	#ifdef WIN_OS
 	
@@ -196,10 +196,26 @@ int main(){
 	
 	Client c;
 
+	if(argc == 3){
+		c.IP_SERVER_HOST = argv[1];
+		c.PORT_SERVER_HOST = std::stoi(argv[2]);
+	}
+	else if(argc == 1){
+
+		c.IP_SERVER_HOST = "127.0.0.1";
+		c.PORT_SERVER_HOST = 2569;
+	}
+	else{
+		std::cerr << "ERROR AND EXPECTED 2 ARGS\n";
+		exit(EXIT_FAILURE);
+	}
+	
+
+
 	if(CLEAR_SCREEN() != 0){
 		std::cerr << "ERROR SYSTEM\n";
 	}
-	
+
 	if(initServerLocal(&c) < 0){
 	
 		CLOSE(c.client_local_fd);

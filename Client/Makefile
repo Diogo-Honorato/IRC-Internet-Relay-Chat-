@@ -58,7 +58,7 @@ clean:
 
 TARGET ?= client
 run: all
-	@$(BIN_DIR)/$(TARGET)
+	@$(BIN_DIR)/$(TARGET) $(ARGS)
 	
 platform:
 	@echo Detected platform: $(PLATFORM)

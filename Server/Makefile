@@ -57,8 +57,8 @@ clean:
 	@-$(RM) $(OBJ_DIR)
 
 TARGET ?= server
-run: all
-	@$(BIN_DIR)/$(TARGET)
+run: 
+	@$(BIN_DIR)/$(TARGET) $(ARGS)
 	
 platform:
 	@echo Detected platform: $(PLATFORM)
